@@ -13,9 +13,9 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
-                    <form method="post" action="{{ $user ? route('user.update', ['user' => $user->id]) : route('user.store') }}" class="mt-6 space-y-6">
+                    <form method="post" enctype="multipart/form-data" action="{{ isset($user) ? route('user.update', ['user' => $user->id]) : route('user.store') }}" class="mt-6 space-y-6">
                         @csrf
-                        
+
                         @if (!empty($user))
                             @method('put')
                         @endif
@@ -68,10 +68,29 @@
                         </div>
 
                         <div>
-                            <x-input-label for="avarta" :value="__('Avarta')" />
-                            <label >
-                                <input type="file" name="avarta"/>
+                            <x-input-label for="avatar" :value="__('Avatar')" />
+                            <label>
+                                <input type="file" name="avatar">
                             </label>
+                            <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
+                            @if(!empty($user) && $user->avatar)
+                            <br/> <br/>
+                            <img src="/storage/{{ $user->avatar }}" width="200" />
+                            @endif
+                        </div>
+
+                        <div>
+                            <x-input-label for="family_id" :value="__('Family')" />
+                            <label>
+                                <select name="family_id" class="form-control" style="min-width: 300px;">
+                                    <option value=""></option>
+                                    @foreach ($families as $family)
+                                    <option value="{{ $family->id }}"
+                                            {{ $family->id == (old('family_id', $user->family_id ?? null )) ? 'selected' : '' }}>{{ $family->name }}</option>
+                                    @endforeach
+                                </select>
+                            </label>
+                            <x-input-error class="mt-2" :messages="$errors->get('family_id')" />
                         </div>
 
                         <div class="flex items-center gap-4">

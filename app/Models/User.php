@@ -29,13 +29,17 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
-        'phone',
         'email',
+        'phone',
         'password',
-        'type',
         'gender',
         'address',
-        'avarta,'
+        'type',
+        'avatar',
+        'family_id',
+        // 'created_at',
+        // 'update_at',
+        // 'delete_at',
     ];
 
     /**
@@ -57,6 +61,11 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function family()
+    {
+        return $this->belongsTo(Family::class);
+    }
 
     public function getGenderLAbelAttribute()
     {
