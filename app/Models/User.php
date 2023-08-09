@@ -82,7 +82,7 @@ class User extends Authenticatable
 
     public function getUserTypeAttribute()
     {
-        if( $this->attributes['type'] == static::TYPE['admin']) {
+        if ( $this->attributes['type'] == static::TYPE['admin']) {
             return 'Administrator';
         }
 

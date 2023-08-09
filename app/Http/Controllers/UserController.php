@@ -10,11 +10,20 @@ use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
+    protected $familyModel;
+    protected $userModel;
+
+    public function __construct(Family $family, User $user)
+    {
+        $this->familyModel = $family;
+        $this->userModel = $user;
+    }
+
     public function index(Request $request)
     {
         $inputs = $request->all();
 
-        $query = User::query();
+        $query = $this->userModel->query();
 
         if (!empty($inputs['family_id'])) {
             $query->where('family_id', $inputs['family_id']);
@@ -46,7 +55,7 @@ class UserController extends Controller
 
     public function store(SaveUserRequest $request)
     {
-        $inputs =$request->all();
+        $inputs = $request->all();
 
         $inputs['password'] = bcrypt($request->password);
         $inputs['type'] = User::TYPE['admin'];
@@ -55,25 +64,23 @@ class UserController extends Controller
             $inputs['avatar'] = Storage::disk('public')->put('media', $request->avatar);
         }
 
-        User::create($request->all());
-
+        $this->userModel->create($request->all());
     }
 
     public function edit($id)
     {
         return view('users.form', [
-            'user' => User::find($id),
-            'families' => Family::all(),
+            'user' => $this->userModel->find($id),
+            'families' => $this->familyModel->all(),
         ]);
     }
 
 
     public function update(SaveUserRequest $request, $id)
     {
-        // dd($request->all());
         $inputs = array_filter($request->all());
 
-        if($request->password) {
+        if ($request->password) {
             $inputs['password'] = bcrypt($request->password);
         }
 
@@ -81,7 +88,7 @@ class UserController extends Controller
             $inputs['avatar'] = Storage::disk('public')->put('media', $request->avatar);
         }
 
-        User::find($id)->update($inputs);
+        $this->userModel->find($id)->update($inputs);
 
         return to_route('user.index');
     }

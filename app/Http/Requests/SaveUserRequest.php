@@ -46,7 +46,6 @@ class SaveUserRequest extends FormRequest
             $rules['password_confirm'] = ['nullable', 'same:password'];
         }
 
-
         return $rules;
     }
 }
