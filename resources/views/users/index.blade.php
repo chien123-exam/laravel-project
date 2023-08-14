@@ -1,4 +1,5 @@
 <x-app-layout>
+
     <x-slot name="header">
        <div class="toolbar" style="display: flex; justify-content: space-between;">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
@@ -16,7 +17,7 @@
                     <form action="{{ route('user.index') }}" method="get">
                         <select name="family_id">
                             <option value=""></option>
-                            @foreach( $families as $family)
+                            @foreach ($families as $family)
                                 <option value="{{ $family->id }}" {{ $family->id == request()->get('family_id') ? 'selected' : ''}}>{{ $family->name }}</option>
                             @endforeach
                         </select>
@@ -35,6 +36,7 @@
                                 <th scope="col">Email</th>
                                 <th scope="col">Phone</th>
                                 <th scope="col">Family Name</th>
+                                <th scope="col">Profile</th>
                                 <th scope="col">Gender</th>
                                 <th scope="col">Action</th>
                             </tr>
@@ -56,6 +58,15 @@
                                 <td>{{ $user->email }}</td>
                                 <td>{{ $user->phone }}</td>
                                 <td>{{ $user->family->name ?? null }}</td>
+                                <td width="150px">
+                                    <ul>
+                                        <li><strong>Facebook:</strong> {{ $user->profile->facebook_url ?? '' }}</li>
+                                        <li><strong>Twitter:</strong> {{ $user->profile->twitter_url ?? '' }}</li>
+                                        <li><strong>Youtube:</strong> {{ $user->profile->youtube_url ?? '' }}</li>
+                                        <li><strong>Zalo Phone:</strong> {{ $user->profile->zalo_phone ?? '' }}</li>
+                                        <li><strong>Other Info:</strong> {{ $user->profile->other_info ?? '' }}</li>
+                                    </ul>
+                                </td>
                                 <td>{{ $user->gender_label }}</td>
                                 <td>
                                     <a href="{{ route('user.edit', ['user' => $user->id]) }}">Edit</a> |

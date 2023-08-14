@@ -37,6 +37,7 @@ class User extends Authenticatable
         'type',
         'avatar',
         'family_id',
+        'profile_id'
         // 'created_at',
         // 'update_at',
         // 'delete_at',
@@ -64,7 +65,7 @@ class User extends Authenticatable
 
     public function family()
     {
-        return $this->belongsTo(Family::class);
+        return $this->belongsTo(Family::class, 'family_id', 'id');
     }
 
     public function getGenderLAbelAttribute()
@@ -87,5 +88,10 @@ class User extends Authenticatable
         }
 
         return 'User';
+    }
+
+    public function profile()
+    {
+        return $this->hasOne(Profile::class);
     }
 }
