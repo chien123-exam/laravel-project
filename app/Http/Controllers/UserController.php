@@ -75,16 +75,14 @@ class UserController extends Controller
 
         $user = $this->userModel->create($inputs);
 
-        // Kiểm tra xem có nhập thông tin profile hay không
         if ($request->filled('facebook_url') || $request->filled('twitter_url') || $request->filled('youtube_url') || $request->filled('zalo_phone') || $request->filled('other_info')) {
-            // Nếu có nhập thông tin profile, tạo mới profile và liên kết với user
             $profileData = [
                 'facebook_url' => $request->facebook_url,
                 'twitter_url' => $request->twitter_url,
                 'youtube_url' => $request->youtube_url,
                 'zalo_phone' => $request->zalo_phone,
                 'other_info' => $request->other_info,
-                'user_id' => $user->id, // Gán giá trị user_id cho profile
+                'user_id' => $user->id
             ];
             $profile = $this->profileModel->create($profileData);
         }
@@ -118,9 +116,7 @@ class UserController extends Controller
         $this->userModel->find($id)->update($inputs);
 
         if ($request->filled('facebook_url') || $request->filled('twitter_url') || $request->filled('youtube_url') || $request->filled('zalo_phone') || $request->filled('other_info')) {
-            // Nếu có nhập thông tin profile
             if ($user->profile) {
-                // Nếu user đã có profile, cập nhật thông tin profile
                 $profileData = [
                     'facebook_url' => $request->facebook_url,
                     'twitter_url' => $request->twitter_url,
@@ -130,23 +126,20 @@ class UserController extends Controller
                 ];
                 $user->profile->update($profileData);
             } else {
-                // Nếu user chưa có profile, tạo mới profile và liên kết với user
                 $profileData = [
                     'facebook_url' => $request->facebook_url,
                     'twitter_url' => $request->twitter_url,
                     'youtube_url' => $request->youtube_url,
                     'zalo_phone' => $request->zalo_phone,
                     'other_info' => $request->other_info,
-                    'user_id' => $user->id, // Gán giá trị user_id cho profile
+                    'user_id' => $user->id
                 ];
                 $profile = $this->profileModel->create($profileData);
             }
         } elseif ($user->profile) {
-            // Nếu không nhập thông tin profile và user đã có profile, xóa profile
             $user->profile->delete();
         }
-
-
+        
         return to_route('user.index');
     }
 
