@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('youtube_url')->nullable();
             $table->string('zalo_phone')->nullable();
             $table->string('other_info')->nullable();
-            $table->unsignedBigInteger('user_id')->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

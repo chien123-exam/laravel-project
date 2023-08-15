@@ -64,9 +64,11 @@ class UserController extends Controller
     public function store(SaveUserRequest $request)
     {
         $inputs = $request->all();
+
         if($request->password) {
             $inputs['password'] = bcrypt($request->password);
         }
+
         $inputs['type'] = User::TYPE['admin'];
 
         if ($request->avatar) {
@@ -75,7 +77,7 @@ class UserController extends Controller
 
         $user = $this->userModel->create($inputs);
 
-        if ($request->filled('facebook_url') || $request->filled('twitter_url') || $request->filled('youtube_url') || $request->filled('zalo_phone') || $request->filled('other_info')) {
+
             $profileData = [
                 'facebook_url' => $request->facebook_url,
                 'twitter_url' => $request->twitter_url,
@@ -84,8 +86,9 @@ class UserController extends Controller
                 'other_info' => $request->other_info,
                 'user_id' => $user->id
             ];
+
             $profile = $this->profileModel->create($profileData);
-        }
+
 
         return to_route('user.index');
     }
@@ -115,7 +118,6 @@ class UserController extends Controller
 
         $this->userModel->find($id)->update($inputs);
 
-        if ($request->filled('facebook_url') || $request->filled('twitter_url') || $request->filled('youtube_url') || $request->filled('zalo_phone') || $request->filled('other_info')) {
             if ($user->profile) {
                 $profileData = [
                     'facebook_url' => $request->facebook_url,
@@ -134,12 +136,10 @@ class UserController extends Controller
                     'other_info' => $request->other_info,
                     'user_id' => $user->id
                 ];
+
                 $profile = $this->profileModel->create($profileData);
             }
-        } elseif ($user->profile) {
-            $user->profile->delete();
-        }
-        
+
         return to_route('user.index');
     }
 
