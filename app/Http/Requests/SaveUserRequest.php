@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Rules\ValidateFacebook;
+use App\Rules\ValidateYoutbe;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -31,9 +32,9 @@ class SaveUserRequest extends FormRequest
             'family_id' => ['required'],
             'gender' => ['required', 'in:1,2'],
             'avatar' => ['nullable','mimes:jpg,png', 'max:5000'],
-            'facebook_url' => ['nullable', 'url', new ValidateFacebook],
-            'twitter_url' => ['nullable', 'url'],
-            'youtube_url' => ['nullable', 'url'],
+            'facebook_url' => ['required', 'url', new ValidateFacebook],
+            'twitter_url' => ['required', 'url'],
+            'youtube_url' => ['required', 'url', new ValidateYoutbe],
             'zalo_phone' => ['nullable', 'numeric'],
             'other_info' => ['nullable'],
         ];
