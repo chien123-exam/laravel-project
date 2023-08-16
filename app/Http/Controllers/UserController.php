@@ -116,7 +116,9 @@ class UserController extends Controller
             $inputs['avatar'] = Storage::disk('public')->put('media', $request->avatar);
         }
 
-        $this->userModel->find($id)->update($inputs);
+        if(!empty($this->userModel->find($id))) {
+            $this->userModel->find($id)->update($inputs);
+        }
 
             if ($user->profile) {
                 $profileData = [
