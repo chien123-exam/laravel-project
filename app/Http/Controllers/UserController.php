@@ -79,16 +79,14 @@ class UserController extends Controller
 
         $user = $this->userModel->create($inputs);
 
-        $profileData = [
+        $profile = $this->profileModel->create([
             'facebook_url' => $request->facebook_url,
             'twitter_url' => $request->twitter_url,
             'youtube_url' => $request->youtube_url,
             'zalo_phone' => $request->zalo_phone,
             'other_info' => $request->other_info,
             'user_id' => $user->id,
-        ];
-
-        $profile = $this->profileModel->create($profileData);
+        ]);
 
         return to_route('user.index');
     }
@@ -119,26 +117,23 @@ class UserController extends Controller
             $this->userModel->find($id)->update($inputs);
         }
 
-        if ($user->profile) {
+        if (! empty($user)) {
+            $user->update($inputs);
+
             $profileData = [
                 'facebook_url' => $request->facebook_url,
                 'twitter_url' => $request->twitter_url,
                 'youtube_url' => $request->youtube_url,
                 'zalo_phone' => $request->zalo_phone,
                 'other_info' => $request->other_info,
-            ];
-            $user->profile->update($profileData);
-        } else {
-            $profileData = [
-                'facebook_url' => $request->facebook_url,
-                'twitter_url' => $request->twitter_url,
-                'youtube_url' => $request->youtube_url,
-                'zalo_phone' => $request->zalo_phone,
-                'other_info' => $request->other_info,
-                'user_id' => $user->id,
             ];
 
-            $profile = $this->profileModel->create($profileData);
+            if ($user->profile) {
+                $user->profile->update($profileData);
+            } else {
+                $profileData['user_id'] = $user->id;
+                $profile = $this->profileModel->create($profileData);
+            }
         }
 
         return to_route('user.index');
