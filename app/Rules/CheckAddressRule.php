@@ -3,6 +3,7 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
+
 // use Illuminate\Contracts\Validation\ValidationRule;
 
 class CheckAddressRule implements Rule
@@ -12,7 +13,6 @@ class CheckAddressRule implements Rule
      *
      * @param  \Closure(string): \Illuminate\Translation\PotentiallyTranslatedString  $fail
      */
-
     public function passes($attribute, $value)
     {
         return ! is_numeric($value);
@@ -22,5 +22,4 @@ class CheckAddressRule implements Rule
     {
         return 'Trường :attribute không được nhập chỉ mỗi số';
     }
-
 }

@@ -15,9 +15,9 @@ class Profile extends Model
         'youtube_url',
         'zalo_phone',
         'other_info',
-        'user_id'
+        'user_id',
     ];
-    
+
     public function user()
     {
         return $this->belongsTo(User::class);

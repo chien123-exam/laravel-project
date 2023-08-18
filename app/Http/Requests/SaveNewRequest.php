@@ -24,8 +24,8 @@ class SaveNewRequest extends FormRequest
         return [
             'name' => ['required', 'max:100'],
             'start_at' => ['required', 'date'],
-            'end_at' => ['required' ,'date', 'after:start_at'],
-            'is_suspension' => ['required', 'boolean']
+            'end_at' => ['required', 'date', 'after:start_at'],
+            'is_suspension' => ['required', 'boolean'],
         ];
     }
 }

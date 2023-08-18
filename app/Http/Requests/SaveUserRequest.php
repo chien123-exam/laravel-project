@@ -31,7 +31,7 @@ class SaveUserRequest extends FormRequest
             'address' => ['required'],
             'family_id' => ['required'],
             'gender' => ['required', 'in:1,2'],
-            'avatar' => ['nullable','mimes:jpg,png', 'max:5000'],
+            'avatar' => ['nullable', 'mimes:jpg,png', 'max:5000'],
             'facebook_url' => ['required', 'url', new ValidateFacebook],
             'twitter_url' => ['required', 'url'],
             'youtube_url' => ['required', 'url', new ValidateYoutbe],
@@ -48,14 +48,11 @@ class SaveUserRequest extends FormRequest
 
         //When update
 
-        if (!empty($this->user)) {
+        if (! empty($this->user)) {
             $rules['password'] = ['nullable', 'min:6'];
             $rules['password_confirm'] = ['nullable', 'same:password'];
         }
 
         return $rules;
     }
-
-
-
 }

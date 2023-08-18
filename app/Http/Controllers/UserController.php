@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\User;
+use App\Http\Requests\SaveUserRequest;
 use App\Models\Family;
 use App\Models\Profile;
+use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use App\Http\Requests\SaveUserRequest;
 
 class UserController extends Controller
 {
     protected $familyModel;
+
     protected $userModel;
+
     protected $profileModel;
 
     public function __construct(Family $family, User $user, Profile $profile)
@@ -28,15 +30,15 @@ class UserController extends Controller
 
         $query = $this->userModel->query();
 
-        if (!empty($inputs['family_id'])) {
+        if (! empty($inputs['family_id'])) {
             $query->where('family_id', $inputs['family_id']);
         }
 
-        if (!empty($inputs['keyword'])) {
-            $query->where(function($query) use($inputs) {
-                $query->orWhere('name', 'like', "%" . $inputs['keyword'] . "%")
-                ->orWhere('email', 'like', "%" . $inputs['keyword'] . "%")
-                ->orWhere('phone', 'like', "%" . $inputs['keyword'] . "%");
+        if (! empty($inputs['keyword'])) {
+            $query->where(function ($query) use ($inputs) {
+                $query->orWhere('name', 'like', '%'.$inputs['keyword'].'%')
+                    ->orWhere('email', 'like', '%'.$inputs['keyword'].'%')
+                    ->orWhere('phone', 'like', '%'.$inputs['keyword'].'%');
             });
 
         }
@@ -48,7 +50,7 @@ class UserController extends Controller
         return view('users.index', [
             'userPaginate' => $userPaginate,
             'families' => $families,
-            'profiles' => Profile::all()
+            'profiles' => Profile::all(),
         ]);
 
     }
@@ -57,7 +59,7 @@ class UserController extends Controller
     {
         return view('users.form', [
             'families' => Family::all(),
-            'profiles' => Profile::all()
+            'profiles' => Profile::all(),
         ]);
     }
 
@@ -65,7 +67,7 @@ class UserController extends Controller
     {
         $inputs = $request->all();
 
-        if($request->password) {
+        if ($request->password) {
             $inputs['password'] = bcrypt($request->password);
         }
 
@@ -77,18 +79,16 @@ class UserController extends Controller
 
         $user = $this->userModel->create($inputs);
 
+        $profileData = [
+            'facebook_url' => $request->facebook_url,
+            'twitter_url' => $request->twitter_url,
+            'youtube_url' => $request->youtube_url,
+            'zalo_phone' => $request->zalo_phone,
+            'other_info' => $request->other_info,
+            'user_id' => $user->id,
+        ];
 
-            $profileData = [
-                'facebook_url' => $request->facebook_url,
-                'twitter_url' => $request->twitter_url,
-                'youtube_url' => $request->youtube_url,
-                'zalo_phone' => $request->zalo_phone,
-                'other_info' => $request->other_info,
-                'user_id' => $user->id
-            ];
-
-            $profile = $this->profileModel->create($profileData);
-
+        $profile = $this->profileModel->create($profileData);
 
         return to_route('user.index');
     }
@@ -98,10 +98,9 @@ class UserController extends Controller
         return view('users.form', [
             'user' => $this->userModel->find($id),
             'families' => $this->familyModel->all(),
-            'profiles' => $this-> profileModel::all()
+            'profiles' => $this->profileModel::all(),
         ]);
     }
-
 
     public function update(SaveUserRequest $request, $id)
     {
@@ -116,33 +115,32 @@ class UserController extends Controller
             $inputs['avatar'] = Storage::disk('public')->put('media', $request->avatar);
         }
 
-        if(!empty($this->userModel->find($id))) {
+        if (! empty($this->userModel->find($id))) {
             $this->userModel->find($id)->update($inputs);
         }
 
-            if ($user->profile) {
-                $profileData = [
-                    'facebook_url' => $request->facebook_url,
-                    'twitter_url' => $request->twitter_url,
-                    'youtube_url' => $request->youtube_url,
-                    'zalo_phone' => $request->zalo_phone,
-                    'other_info' => $request->other_info,
-                ];
-                $user->profile->update($profileData);
-            } else {
-                $profileData = [
-                    'facebook_url' => $request->facebook_url,
-                    'twitter_url' => $request->twitter_url,
-                    'youtube_url' => $request->youtube_url,
-                    'zalo_phone' => $request->zalo_phone,
-                    'other_info' => $request->other_info,
-                    'user_id' => $user->id
-                ];
+        if ($user->profile) {
+            $profileData = [
+                'facebook_url' => $request->facebook_url,
+                'twitter_url' => $request->twitter_url,
+                'youtube_url' => $request->youtube_url,
+                'zalo_phone' => $request->zalo_phone,
+                'other_info' => $request->other_info,
+            ];
+            $user->profile->update($profileData);
+        } else {
+            $profileData = [
+                'facebook_url' => $request->facebook_url,
+                'twitter_url' => $request->twitter_url,
+                'youtube_url' => $request->youtube_url,
+                'zalo_phone' => $request->zalo_phone,
+                'other_info' => $request->other_info,
+                'user_id' => $user->id,
+            ];
 
-                $profile = $this->profileModel->create($profileData);
-            }
+            $profile = $this->profileModel->create($profileData);
+        }
 
         return to_route('user.index');
     }
-
 }

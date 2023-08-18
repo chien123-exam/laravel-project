@@ -14,12 +14,12 @@ class User extends Authenticatable
 
     const GENDER = [
         'male' => 1,
-        'famale' => 2
+        'famale' => 2,
     ];
 
     const TYPE = [
         'admin' => 2,
-        'normal' => 1
+        'normal' => 1,
     ];
 
     /**
@@ -37,7 +37,7 @@ class User extends Authenticatable
         'type',
         'avatar',
         'family_id',
-        'profile_id'
+        'profile_id',
         // 'created_at',
         // 'update_at',
         // 'delete_at',
@@ -83,7 +83,7 @@ class User extends Authenticatable
 
     public function getUserTypeAttribute()
     {
-        if ( $this->attributes['type'] == static::TYPE['admin']) {
+        if ($this->attributes['type'] == static::TYPE['admin']) {
             return 'Administrator';
         }
 

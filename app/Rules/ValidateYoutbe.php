@@ -16,7 +16,7 @@ class ValidateYoutbe implements ValidationRule
     {
         $regex = '/^(https?:\/\/)?([\da-z\.-]+)\.facebook([\/\w \.-]*)*\/?$/';
 
-        if (!preg_match($regex, $value)) {
+        if (! preg_match($regex, $value)) {
             $fail('Not format youtube');
         }
     }

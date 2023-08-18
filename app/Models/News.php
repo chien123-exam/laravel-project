@@ -14,7 +14,7 @@ class News extends Model
         'start_at',
         'end_at',
         'is_suspension',
-        'user_id'
+        'user_id',
     ];
 
     public function user()

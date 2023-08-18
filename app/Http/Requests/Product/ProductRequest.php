@@ -2,13 +2,11 @@
 
 namespace App\Http\Requests\Product;
 
-use Illuminate\Foundation\Http\FormRequest;
 use App\Rules\CheckAddressRule;
 use App\Rules\CheckNumberForPhoneRule;
 use App\Rules\CheckValidateForYearRule;
-use App\Rules\CheckValidateUrlRule;
 use App\Rules\CheckValueForMemberRule;
-use App\Rules\ValidateTargetValueRule;
+use Illuminate\Foundation\Http\FormRequest;
 
 class ProductRequest extends FormRequest
 {
