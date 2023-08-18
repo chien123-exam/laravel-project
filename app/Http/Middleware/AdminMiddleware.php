@@ -15,8 +15,9 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if($request->email != 'admin@gmail.com' || $request->password != '123456') {
+        if ($request->email != 'admin@gmail.com' || $request->password != '123456') {
             abort(403);
+
             return redirect()->route('login');
         }
 

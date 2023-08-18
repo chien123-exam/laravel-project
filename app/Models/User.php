@@ -14,12 +14,12 @@ class User extends Authenticatable
 
     const GENDER = [
         'male' => 1,
-        'famale' => 2
+        'famale' => 2,
     ];
 
     const TYPE = [
         'admin' => 2,
-        'normal' => 1
+        'normal' => 1,
     ];
 
     /**
@@ -29,13 +29,18 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
-        'phone',
         'email',
+        'phone',
         'password',
-        'type',
         'gender',
         'address',
-        'avarta,'
+        'type',
+        'avatar',
+        'family_id',
+        'profile_id',
+        // 'created_at',
+        // 'update_at',
+        // 'delete_at',
     ];
 
     /**
@@ -58,6 +63,11 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    public function family()
+    {
+        return $this->belongsTo(Family::class, 'family_id', 'id');
+    }
+
     public function getGenderLAbelAttribute()
     {
         if ($this->attributes['gender'] == static::GENDER['male']) {
@@ -73,10 +83,15 @@ class User extends Authenticatable
 
     public function getUserTypeAttribute()
     {
-        if( $this->attributes['type'] == static::TYPE['admin']) {
+        if ($this->attributes['type'] == static::TYPE['admin']) {
             return 'Administrator';
         }
 
         return 'User';
+    }
+
+    public function profile()
+    {
+        return $this->hasOne(Profile::class);
     }
 }

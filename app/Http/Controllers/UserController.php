@@ -2,62 +2,139 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\User;
 use App\Http\Requests\SaveUserRequest;
+use App\Models\Family;
+use App\Models\Profile;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
-    public function index()
+    protected $familyModel;
+
+    protected $userModel;
+
+    protected $profileModel;
+
+    public function __construct(Family $family, User $user, Profile $profile)
     {
+        $this->familyModel = $family;
+        $this->userModel = $user;
+        $this->profileModel = $profile;
+    }
+
+    public function index(Request $request)
+    {
+        $inputs = $request->all();
+
+        $query = $this->userModel->query();
+
+        if (! empty($inputs['family_id'])) {
+            $query->where('family_id', $inputs['family_id']);
+        }
+
+        if (! empty($inputs['keyword'])) {
+            $query->where(function ($query) use ($inputs) {
+                $query->orWhere('name', 'like', '%'.$inputs['keyword'].'%')
+                    ->orWhere('email', 'like', '%'.$inputs['keyword'].'%')
+                    ->orWhere('phone', 'like', '%'.$inputs['keyword'].'%');
+            });
+
+        }
+
+        $userPaginate = $query->paginate(5);
+
+        $families = $this->familyModel->all();
+
         return view('users.index', [
-            'users' =>User::get()
+            'userPaginate' => $userPaginate,
+            'families' => $families,
+            'profiles' => Profile::all(),
         ]);
+
     }
 
     public function create()
     {
-        return view('users.form');
+        return view('users.form', [
+            'families' => Family::all(),
+            'profiles' => Profile::all(),
+        ]);
     }
 
     public function store(SaveUserRequest $request)
     {
-        // dd($request->all());
-        // User::create([
-        //     'name' => $request->name,
-        //     'email' => $request->email,
-        //     'phone' => $request->phone,
-        //     'address' => $request->address,
-        //     'gender' => $request->gender,
-        //     'avarta' => null,
-        //     'type' => User::TYPE['admin'],
-        //     'password' => $request->password,
+        $inputs = $request->all();
 
-        // ]);
-        $inputs =$request->all();
-        $inputs['password'] = bcrypt($request->password);
+        if ($request->password) {
+            $inputs['password'] = bcrypt($request->password);
+        }
 
-        User::create($request->all());
+        $inputs['type'] = User::TYPE['admin'];
 
+        if ($request->avatar) {
+            $inputs['avatar'] = Storage::disk('public')->put('media', $request->avatar);
+        }
+
+        $user = $this->userModel->create($inputs);
+
+        $profile = $this->profileModel->create([
+            'facebook_url' => $request->facebook_url,
+            'twitter_url' => $request->twitter_url,
+            'youtube_url' => $request->youtube_url,
+            'zalo_phone' => $request->zalo_phone,
+            'other_info' => $request->other_info,
+            'user_id' => $user->id,
+        ]);
+
+        return to_route('user.index');
     }
 
     public function edit($id)
     {
         return view('users.form', [
-            'user' => User::find($id)
+            'user' => $this->userModel->find($id),
+            'families' => $this->familyModel->all(),
+            'profiles' => $this->profileModel::all(),
         ]);
     }
-
 
     public function update(SaveUserRequest $request, $id)
     {
         $inputs = array_filter($request->all());
+        $user = $this->userModel->find($id)->update($inputs);
 
-        if($request->password) {
+        if ($request->password) {
             $inputs['password'] = bcrypt($request->password);
         }
 
-        User::find($id)->update($inputs);
+        if ($request->avatar) {
+            $inputs['avatar'] = Storage::disk('public')->put('media', $request->avatar);
+        }
+
+        if (! empty($this->userModel->find($id))) {
+            $this->userModel->find($id)->update($inputs);
+        }
+
+        if (! empty($user)) {
+            $user->update($inputs);
+
+            $profileData = [
+                'facebook_url' => $request->facebook_url,
+                'twitter_url' => $request->twitter_url,
+                'youtube_url' => $request->youtube_url,
+                'zalo_phone' => $request->zalo_phone,
+                'other_info' => $request->other_info,
+            ];
+
+            if ($user->profile) {
+                $user->profile->update($profileData);
+            } else {
+                $profileData['user_id'] = $user->id;
+                $profile = $this->profileModel->create($profileData);
+            }
+        }
 
         return to_route('user.index');
     }
