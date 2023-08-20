@@ -29,6 +29,12 @@
                     </x-nav-link>
                 </div>
 
+                <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                    <x-nav-link  :href="route('course.index')" :active="request()->routeIs('course.index')">
+                        {{ __('Course management') }}
+                    </x-nav-link>
+                </div>
+
 
             </div>
 
